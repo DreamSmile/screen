@@ -44,7 +44,7 @@
             </div>
             <ul>
               <li v-for="(item,i) in 7" :key="i">
-                <span class="NO">TOP <em>{{i}}</em></span>
+                <span class="NO" :style="{color:i<3?'#eb9940':'#287f81'}">TOP <em>{{i}}</em></span>
                 <div class="info">
                   <div class="num"><span>张颖</span><span>21</span><span>33312</span></div>
                   <p class="adress">2X安徽晋盛东区（直营）WHMA02马鞍山市南超长超出超长超出超长超出超长超出</p>
@@ -58,13 +58,13 @@
           <div class="real_data">
             <div class="title">
               <span class="name">今日实时销售额</span>
-              <span class="time">2021年6月9日 12:00:08</span>
+              <span class="time">{{nowTime}}</span>
             </div>
             <div class="btns">
-              <button class="btn isSel">今日</button>
-              <button class="btn">本周</button>
-              <button class="btn">本月</button>
-              <button class="btn">更多</button>
+              <button :class="['btn',{isSel:time==0}]" @click="timesel(0)">今日</button>
+              <button :class="['btn',{isSel:time==1}]" @click="timesel(1)">本周</button>
+              <button :class="['btn',{isSel:time==2}]" @click="timesel(2)">本月</button>
+              <button :class="['btn',{isSel:time==3}]" @click="timesel(3)">更多</button>
             </div>
             <div class="nums">
               <div class="bg" v-for="(item,i) in 9" :key="i">
@@ -83,17 +83,42 @@
                 <span class="name">贸易公司售空率</span>
                 <span class="num">售空率<em> 69%</em></span>
               </div>
-              <div class="echart">
-                这是图表
+              <div class="edit">
+                <span class="edit_name">部别</span>
+                <!--  :style="{backgroundImage:'url('+$imgsrc+'down.png)'}" -->
+                <select>
+                  <option>IT部</option>
+                  <option>生产部</option>
+                </select>
+                <span class="edit_name">编号</span>
+                <select>
+                  <option>春季</option>
+                  <option>全部</option>
+                </select><span class="edit_name">品类</span>
+                <select>
+                  <option>全部</option>
+                  <option>上衣</option>
+                </select>
+              </div>
+              <div class="echart my">
+                <my-echert ref="mEchart" class="l1"></my-echert>
               </div>
             </div>
             <div class="box_echart">
               <div class="title">
-                <span class="name">贸易公司售空率</span>
+                <span class="name">领航公司售空率</span>
                 <span class="num">售空率<em> 69%</em></span>
               </div>
-              <div class="echart">
-                这是图表
+              <div class="edit">
+                <span class="edit_name">编号</span>
+                <!--  :style="{backgroundImage:'url('+$imgsrc+'down.png)'}" -->
+                <select>
+                  <option>春季</option>
+                  <option>秋季</option>
+                </select>
+              </div>
+              <div class="echart lh">
+                <my-echert ref="lEchart" class="l2"></my-echert>
               </div>
             </div>
           </div>
@@ -102,17 +127,40 @@
             <div class="title">
               <span class="name">贸易公司理单云仓销售</span>
             </div>
-            <div class="echart"></div>
+            <div class="edit">
+              <span class="edit_name">部别</span>
+              <!--  :style="{backgroundImage:'url('+$imgsrc+'down.png)'}" -->
+              <select>
+                <option>IT部</option>
+                <option>生产部</option>
+              </select>
+              <span class="edit_name">编号</span>
+              <select>
+                <option>春季</option>
+                <option>全部</option>
+              </select><span class="edit_name">品类</span>
+              <select>
+                <option>全部</option>
+                <option>上衣</option>
+              </select>
+            </div>
+            <div class="echart ld">
+              <my-echert ref="ldEchart" class="l3"></my-echert>
+            </div>
           </div>
         </div>
         <div class="con_right">
           <div class="date">
             <select>
               <option>2021-06-01</option>
+              <option>2021-06-02</option>
+              <option>2021-06-03</option>
             </select>
             <em>至</em>
             <select>
               <option>2021-06-01</option>
+              <option>2021-06-02</option>
+              <option>2021-06-03</option>
             </select>
           </div>
           <div class="title">
@@ -122,13 +170,22 @@
             <div class="table_title">
               <span>序号</span><span>公司名称</span><span>金额</span>
             </div>
-            <ul>
-              <li v-for="(item,i) in 9" :key="i" :class="{bg:(i%2==0)?true:false}">
-                <div class="NO"><span>{{i+1}}</span></div>
-                <span class="name">2X安徽晋盛东区（直营）马鞍山市南超长超出超长超出超长</span>
-                <span class="num">331.22</span>
-              </li>
-            </ul>
+            <div id="scroll_box" ref="scroll_box" class="list anim">
+              <ul ref="list1">
+                <li v-for="(item,i) in 11" :key="i" :class="{bg:(i%2==0)?true:false}">
+                  <div class="NO" :style="{backgroundColor:i==0?'red':i==1?'#ea6318':i==2?'#e2a21b':'#3ab8b6'}"><span>{{i+1}}</span></div>
+                  <span class="name">2X安徽晋盛东区（直营）马鞍山市南超长超出超长超出超长</span>
+                  <span class="num">331.22</span>
+                </li>
+              </ul>
+              <ul ref="list2">
+                <li v-for="(item,i) in 11" :key="i" :class="{bg:(i%2==0)?true:false}">
+                  <div class="NO" :style="{backgroundColor:i==0?'red':i==1?'#ea6318':i==2?'#e2a21b':'#3ab8b6'}"><span>{{i+1}}</span></div>
+                  <span class="name">2X安徽晋盛东区（直营）马鞍山市南超长超出超长超出超长</span>
+                  <span class="num">331.22</span>
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="title last_title">
             <span class="name">贸易公司门店云仓库销售排行榜</span>
@@ -137,19 +194,161 @@
             <div class="table_title">
               <span>序号</span><span>公司名称</span><span>金额</span>
             </div>
-            <ul>
-              <li v-for="(item,i) in 9" :key="i" :class="{bg:(i%2==0)?true:false}">
-                <div class="NO"><span>{{i+1}}</span></div>
-                <span class="name">2X安徽晋盛东区（直营）马鞍山市南超长超出超长超出超长</span>
-                <span class="num">331.22</span>
-              </li>
-            </ul>
+            <div class="list anim">
+              <ul ref="list1">
+                <li v-for="(item,i) in 11" :key="i" :class="{bg:(i%2==0)?true:false}">
+                  <div class="NO" :style="{backgroundColor:i==0?'red':i==1?'#ea6318':i==2?'#e2a21b':'#3ab8b6'}"><span>{{i+1}}</span></div>
+                  <span class="name">2X安徽晋盛东区（直营）马鞍山市南超长超出超长超出超长</span>
+                  <span class="num">331.22</span>
+                </li>
+              </ul>
+              <ul ref="list2">
+                <li v-for="(item,i) in 11" :key="i" :class="{bg:(i%2==0)?true:false}">
+                  <div class="NO" :style="{backgroundColor:i==0?'red':i==1?'#ea6318':i==2?'#e2a21b':'#3ab8b6'}"><span>{{i+1}}</span></div>
+                  <span class="name">2X安徽晋盛东区（直营）马鞍山市南超长超出超长超出超长</span>
+                  <span class="num">331.22</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+<script>
+import MyEchert from "../components/MyEchert.vue";
+export default {
+  components: { MyEchert },
+  name: "Home",
+  data() {
+    return {
+      rate: 1,
+      time: 0, //销售选择时间
+      // 贸易公司售空率配置
+      mOption: {
+        xAxis: ["js006江苏", "kM泉州", "PL上海", "js006北京", "kM晋江"],
+        num: [90, 130, 180, 35, 90],
+      },
+      // 领航售空率图标配置
+      lItem: [
+        { id: "HS89", No: 1, name: "江苏", num: 13 },
+        { id: "HS89", No: 2, name: "上海", num: 200 },
+        { id: "HS89", No: 3, name: "泉州", num: 50 },
+        { id: "HS89", No: 4, name: "西藏", num: 90 },
+        { id: "HSL9", No: 5, name: "黑龙江", num: 100 },
+        { id: "HA89", No: 6, name: "东北", num: 80 },
+        { id: "HS879", No: 7, name: "晋江", num: 189 },
+      ],
+      lOption: {
+        xAxis: ["领航", "kM泉州", "PL上海", "js006北京", "kM晋江"],
+        num: [0, 150, 10, 200, 70],
+      },
+      // 贸易公司理单
+      ldOption: {
+        xAxis: [
+          "理单1",
+          "理单理单阿生成比啊",
+          "kM晋江",
+          "PL黑龙江",
+          "js006陕西",
+          "kM莆田",
+          "PL云南",
+          "PL黑龙江",
+          "js006陕西",
+          "kM莆田",
+          "PL云南",
+          "PL最后",
+        ],
+        num: [10, 150, 10, 200, 70, 130, 90, 90, 130, 180, 35, 90],
+      },
+      timer: null, //定时器
+      nowTime: null,
+    };
+  },
+  mounted() {
+    let _this = this;
+    _this.screen();
+    window.onresize = function () {
+      _this.screen();
+    };
+    this.$refs.mEchart.initEchart(this.mOption); //贸易公司图表
+    this.$refs.lEchart.initEchart(this.lOption); //领航图表
+    this.$refs.ldEchart.initEchart(this.ldOption); //贸易公司理单图表
+    this.gitNowTime = setInterval(() => {
+      _this.nowTime = this.getDateString(new Date()); // 修改数据date
+    }, 1000);
+
+    // var list1 = this.$refs.list1;
+    // var list2 = this.$refs.list2;
+    // var scroll_box = this.$refs.scroll_box;
+    // list2.innerHTML = list1.innerHTML;
+    // scroll_box.scrollTop = 0; // 开始无滚动时设为0
+    // let timer = setInterval(this.rollStart, 1500); // 设置定时器，（单位毫秒），参数t越小，滚动速度越快
+    // // 鼠标移入div时暂停滚动
+    // scroll_box.onmouseover = function () {
+    //   clearInterval(timer);
+    // };
+    // // 鼠标移出div后继续滚动
+    // scroll_box.onmouseout = function () {
+    //   timer = setInterval(this.rollStart, 1500);
+    // };
+    // this.$once("hook:beforeDestroy", () => {
+    //   //界面关闭时销毁定时器
+    //   clearInterval(timer);
+    //   timer = null;
+    // });
+  },
+  beforeDestroy() {
+    if (this.gitNowTime) {
+      clearInterval(this.gitNowTime); // 在Vue实例销毁前，清除我们的定时器
+    }
+  },
+  methods: {
+    getDateString(date) {
+      var year = date.getFullYear().toString().padStart(4, "0");
+      var month = (date.getMonth() + 1).toString().padStart(2, "0");
+      var day = date.getDate().toString().padStart(2, "0");
+
+      var hour = date.getHours().toString().padStart(2, "0");
+      var minute = date.getMinutes().toString().padStart(2, "0");
+      var second = date.getSeconds().toString().padStart(2, "0");
+      return `${year}年${month}月${day}日 ${hour}:${minute}:${second}`;
+    },
+
+    // 界面缩放，界面缩放
+    screen() {
+      const heightRatio = Number(document.documentElement.clientHeight / 1216);
+      const widthRatio = Number(document.documentElement.clientWidth / 1920);
+      var ratio =
+        document.documentElement.clientWidth /
+        document.documentElement.clientHeight;
+      if (ratio < 1920 / 1216) {
+        this.rate = widthRatio;
+      } else {
+        this.rate = heightRatio;
+      }
+    },
+    // 列表数据滚动
+    rollStart() {
+      // 上面声明的DOM对象为局部对象需要再次声明
+      var list1 = this.$refs.list1;
+      var scroll_box = this.$refs.scroll_box; // 正常滚动不断给scrollTop的值+1,当滚动高度大于列表内容高度时恢复为0
+      if (scroll_box.scrollTop >= list1.scrollHeight) {
+        scroll_box.scrollTop = 0;
+      } else {
+        scroll_box.scrollTop += 30;
+      }
+    },
+    // 时间选择按钮
+    timesel(num) {
+      this.time = num;
+    },
+  },
+};
+</script>
+
+
 <style scoped lang="less">
 .home {
   background-color: #091a24;
@@ -350,7 +549,6 @@
         width: 1050px;
         margin: 0 34px 0 40px;
         box-sizing: border-box;
-        // flex: 1;
         .real_data {
           .title {
             border-bottom: 2px solid #39b8b6;
@@ -428,6 +626,7 @@
             vertical-align: top;
             display: inline-block;
             width: calc(50% - 17px); //间隔为34px
+            position: relative;
             .title {
               padding-bottom: 10px;
               border-bottom: 2px solid #39b8b6;
@@ -454,24 +653,57 @@
                 }
               }
             }
+            .edit {
+              text-align: right;
+              padding: 18px 0 20px 0;
+              position: absolute;
+              top: 20px;
+              right: 0;
+
+              .edit_name {
+                font-size: 14px;
+                color: #fff;
+              }
+              select {
+                appearance: none; //去掉下拉图标
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                background: transparent;
+                color: #39b8b6;
+                font-size: 14px;
+                padding: 2px 24px 2px 10px;
+                // background-position: 50%;
+                // background-size: cover;
+                position: relative;
+                option {
+                }
+              }
+              select:after {
+                content: "";
+                width: 10px;
+                height: 6px;
+                background-image: url("http://tm.lilanz.com/QYWX/Test/LMTest/assets/img/screen/down.png");
+                background-repeat: no-repeat;
+                background-position: center;
+                position: absolute;
+                top: 5px;
+                right: 0;
+              }
+            }
             .echart {
               background-color: #0b212c;
               height: 296px;
+              width: 100%;
+              overflow-x: auto;
             }
           }
           .box_echart:last-child {
-            // float: right;
             margin-left: 34px;
           }
-          // .box_echart:last-child:after {
-          //   clear: both;
-          //   display: block;
-          //   visibility: hidden;
-          //   height: 0;
-          // }
         }
         .sell {
           margin-top: 34px;
+          position: relative;
           .title {
             padding-bottom: 10px;
             border-bottom: 2px solid #39b8b6;
@@ -480,6 +712,43 @@
               font-size: 20px;
               color: #fff;
               font-weight: 500;
+            }
+          }
+          .edit {
+            text-align: right;
+            padding: 18px 0 20px 0;
+            position: absolute;
+            top: 20px;
+            right: 0;
+
+            .edit_name {
+              font-size: 14px;
+              color: #fff;
+            }
+            select {
+              appearance: none; //去掉下拉图标
+              -webkit-appearance: none;
+              -moz-appearance: none;
+              background: transparent;
+              color: #39b8b6;
+              font-size: 14px;
+              padding: 2px 24px 2px 10px;
+              // background-position: 50%;
+              // background-size: cover;
+              position: relative;
+              option {
+              }
+            }
+            select:after {
+              content: "";
+              width: 10px;
+              height: 6px;
+              background-image: url("http://tm.lilanz.com/QYWX/Test/LMTest/assets/img/screen/down.png");
+              background-repeat: no-repeat;
+              background-position: center;
+              position: absolute;
+              top: 5px;
+              right: 0;
             }
           }
           .echart {
@@ -524,59 +793,79 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            // margin-top: 22px;
-            // margin-bottom: 18px;
             line-height: 55px;
             height: 55px;
             padding: 0 14px;
             box-sizing: border-box;
           }
-          ul {
-            li {
-              color: #fff;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              height: 60px;
-              line-height: 60px;
-              padding: 0 14px;
-              box-sizing: border-box;
-              .NO {
-                background-color: #3ab8b6;
-                width: 20px;
-                height: 20px;
+          .list {
+            height: 390px;
+            overflow: hidden;
+            ul {
+              -webkit-animation: 5s move infinite linear;
+              li {
+                color: #fff;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                height: 60px;
+                line-height: 60px;
+                padding: 0 14px;
                 box-sizing: border-box;
-                text-align: center;
-                border-radius: 50%;
-                // position: relative;
-                span {
-                  font-size: 10px;
-                  font-weight: 500;
-                  line-height: 20px;
-                  display: block;
-                  // position: absolute;
-                  // top: 50%;
-                  // left: 50%;
-                  // margin-top: -5px;
-                  // margin-left: -5px;
+                .NO {
+                  background-color: #3ab8b6;
+                  width: 20px;
+                  height: 20px;
+                  box-sizing: border-box;
+                  text-align: center;
+                  border-radius: 50%;
+                  // position: relative;
+                  span {
+                    font-size: 10px;
+                    font-weight: 500;
+                    line-height: 20px;
+                    display: block;
+                    // position: absolute;
+                    // top: 50%;
+                    // left: 50%;
+                    // margin-top: -5px;
+                    // margin-left: -5px;
+                  }
                 }
-                
+                .name {
+                  font-size: 14px;
+                  width: 194px;
+                  overflow: hidden;
+                  text-overflow: hidden;
+                  word-break: keep-all; /* 不换行 */
+                  white-space: nowrap; /* 不换行 */
+                }
+                .num {
+                }
               }
-              .name {
-                font-size: 14px;
-                width: 194px;
-                overflow: hidden;
-                text-overflow: hidden;
-                word-break: keep-all; /* 不换行 */
-                white-space: nowrap; /* 不换行 */
-              }
-              .num {
+              .bg {
+                background-color: #0c2c36;
+                height: 30px;
+                line-height: 30px;
               }
             }
-            .bg {
-              background-color: #0c2c36;
-              height: 30px;
-              line-height: 30px;
+
+            @-webkit-keyframes move {
+              0% {
+                transform: translate(0, 0);
+              }
+              100% {
+                transform: translate(0, -100%);
+              }
+            }
+
+            @keyframes move {
+              0% {
+                transform: translate(0, 0);
+              }
+              100% {
+                transform: translate(0, -100%);
+              }
             }
           }
         }
@@ -588,37 +877,4 @@
   }
 }
 </style>
-
-<script>
-export default {
-  name: "Home",
-  data() {
-    return {
-      rate: 1,
-    };
-  },
-  mounted() {
-    let _this = this;
-    _this.screen();
-    window.onresize = function () {
-      _this.screen();
-    };
-  },
-
-  methods: {
-    screen() {
-      const heightRatio = Number(document.documentElement.clientHeight / 1216);
-      const widthRatio = Number(document.documentElement.clientWidth / 1920);
-      var ratio =
-        document.documentElement.clientWidth /
-        document.documentElement.clientHeight;
-      if (ratio < 1920 / 1216) {
-        this.rate = widthRatio;
-      } else {
-        this.rate = heightRatio;
-      }
-    },
-  },
-};
-</script>
 
