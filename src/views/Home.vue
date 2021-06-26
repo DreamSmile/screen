@@ -560,6 +560,7 @@
                   // margin-top: -5px;
                   // margin-left: -5px;
                 }
+                
               }
               .name {
                 font-size: 14px;
