@@ -328,7 +328,6 @@ export default {
         };
       })()
     ); //此处()作用 - 立即调用return后面函数，形成闭包
-
     this.$refs.mEchart.initEchart(this.mOption); //贸易公司图表
     this.$refs.lEchart.initEchart(this.lOption); //领航图表
     this.$refs.ldEchart.initEchart(this.ldOption); //贸易公司理单图表
