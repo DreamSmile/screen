@@ -333,6 +333,7 @@
                 width: 104px;
                 text-align: center;
               }
+              
             }
             .line {
               width: calc(100% - 60px);
