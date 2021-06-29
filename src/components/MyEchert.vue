@@ -11,6 +11,7 @@ import {
   TitleComponent,
   TooltipComponent,
   GridComponent,
+  DataZoomComponent,
 } from "echarts/components";
 // 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
 import { CanvasRenderer } from "echarts/renderers";
@@ -21,6 +22,7 @@ echarts.use([
   GridComponent,
   BarChart,
   CanvasRenderer,
+  DataZoomComponent,
 ]);
 export default {
   props: {
@@ -31,10 +33,7 @@ export default {
   },
   mounted() {},
   methods: {
-    //   xAxix横轴，yAxis纵轴
     initEchart(options) {
-      //   console.log("子组件方法");
-
       let getchart = echarts.init(this.$el);
       let option = {
         xAxis: {
@@ -91,7 +90,6 @@ export default {
           {
             data: options.num,
             type: "bar",
-            // barWidth: 20,
             barGap: "16%" /*多个并排柱子设置柱子之间的间距*/,
             barCategoryGap: "50%",
             itemStyle: {
@@ -117,34 +115,18 @@ export default {
             },
           },
         ],
-        aria: {
-          label: {
-            data: {
-              maxCount: 6,
-            },
+        dataZoom: [
+          //滑动条
+          {
+            show: false,
+            start: 0,
+            end: 60,
           },
-        },
-        // dataZoom: [
-        //   {
-        //     type: "slider",
-        //     show: true,
-        //     start: 0,
-        //     end: 6,
-        //     handleSize: 8,
-        //   },
-        //   {
-        //     type: "inside",
-        //     start: 0,
-        //     end: 6,
-        //   },
-        // ],
-
+        ],
         tooltip: {
           trigger: "item",
           backgroundColor: "rgba(0,0,0,0.5)", //设置背景图片 rgba格式
           color: "black",
-          //   borderWidth: "1", //边框宽度设置1
-          //   borderColor: "gray", //设置边框颜色
           textStyle: {
             color: "#fff", //设置文字颜色
           },

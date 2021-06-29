@@ -76,8 +76,8 @@
               <span>当日实时商品量：<em>3332</em></span>
             </div>
           </div>
-          <!-- 售空率 -->
           <div class="sellout">
+            <!-- 贸易公司售空率 -->
             <div class="box_echart">
               <div class="title">
                 <span class="name">贸易公司售空率</span>
@@ -85,25 +85,35 @@
               </div>
               <div class="edit">
                 <span class="edit_name">部别</span>
-                <!--  :style="{backgroundImage:'url('+$imgsrc+'down.png)'}" -->
-                <select>
-                  <option>IT部</option>
-                  <option>生产部</option>
-                </select>
+                <div class="icon_sel">
+                  <select>
+                    <option>I</option>
+                    <option>生</option>
+                  </select>
+                  <img class="down_icon" :src="$imgsrc+'down.png'" />
+                </div>
                 <span class="edit_name">编号</span>
-                <select>
-                  <option>春季</option>
-                  <option>全部</option>
-                </select><span class="edit_name">品类</span>
-                <select>
-                  <option>全部</option>
-                  <option>上衣</option>
-                </select>
+                <div class="icon_sel">
+                  <select>
+                    <option>IT部</option>
+                    <option>生产部生产部生产部生产部</option>
+                  </select>
+                  <img class="down_icon" :src="$imgsrc+'down.png'" />
+                </div>
+                <span class="edit_name">品类</span>
+                <div class="icon_sel">
+                  <select>
+                    <option>IT部</option>
+                    <option>生产部</option>
+                  </select>
+                  <img class="down_icon" :src="$imgsrc+'down.png'" />
+                </div>
               </div>
               <div class="echart my">
                 <my-echert ref="mEchart" class="l1"></my-echert>
               </div>
             </div>
+            <!-- 领航公司售空率 -->
             <div class="box_echart">
               <div class="title">
                 <span class="name">领航公司售空率</span>
@@ -111,11 +121,13 @@
               </div>
               <div class="edit">
                 <span class="edit_name">编号</span>
-                <!--  :style="{backgroundImage:'url('+$imgsrc+'down.png)'}" -->
-                <select>
-                  <option>春季</option>
-                  <option>秋季</option>
-                </select>
+                <div class="icon_sel">
+                  <select>
+                    <option>春季</option>
+                    <option>秋季季</option>
+                  </select>
+                  <img class="down_icon" :src="$imgsrc+'down.png'" />
+                </div>
               </div>
               <div class="echart lh">
                 <my-echert ref="lEchart" class="l2"></my-echert>
@@ -129,20 +141,29 @@
             </div>
             <div class="edit">
               <span class="edit_name">部别</span>
-              <!--  :style="{backgroundImage:'url('+$imgsrc+'down.png)'}" -->
-              <select>
-                <option>IT部</option>
-                <option>生产部</option>
-              </select>
+              <div class="icon_sel">
+                <select>
+                  <option>IT部</option>
+                  <option>生产部</option>
+                </select>
+                <img class="down_icon" :src="$imgsrc+'down.png'" />
+              </div>
               <span class="edit_name">编号</span>
-              <select>
-                <option>春季</option>
-                <option>全部</option>
-              </select><span class="edit_name">品类</span>
-              <select>
-                <option>全部</option>
-                <option>上衣</option>
-              </select>
+              <div class="icon_sel">
+                <select>
+                  <option>IT部</option>
+                  <option>生产部</option>
+                </select>
+                <img class="down_icon" :src="$imgsrc+'down.png'" />
+              </div>
+              <span class="edit_name">品类</span>
+              <div class="icon_sel">
+                <select>
+                  <option>IT部</option>
+                  <option>生产部</option>
+                </select>
+                <img class="down_icon" :src="$imgsrc+'down.png'" />
+              </div>
             </div>
             <div class="echart ld">
               <my-echert ref="ldEchart" class="l3"></my-echert>
@@ -170,7 +191,7 @@
             <div class="table_title">
               <span>序号</span><span>公司名称</span><span>金额</span>
             </div>
-            <div id="scroll_box" ref="scroll_box" class="list anim">
+            <div id="scroll_box" ref="scroll_box" class="list anim" @mouseenter="stopAn" @mouseleave="leaveAn">
               <ul ref="list1">
                 <li v-for="(item,i) in 11" :key="i" :class="{bg:(i%2==0)?true:false}">
                   <div class="NO" :style="{backgroundColor:i==0?'red':i==1?'#ea6318':i==2?'#e2a21b':'#3ab8b6'}"><span>{{i+1}}</span></div>
@@ -195,14 +216,14 @@
               <span>序号</span><span>公司名称</span><span>金额</span>
             </div>
             <div class="list anim">
-              <ul ref="list1">
+              <ul ref="list3" @mouseenter="stopAn1" @mouseleave="leaveAn1">
                 <li v-for="(item,i) in 11" :key="i" :class="{bg:(i%2==0)?true:false}">
                   <div class="NO" :style="{backgroundColor:i==0?'red':i==1?'#ea6318':i==2?'#e2a21b':'#3ab8b6'}"><span>{{i+1}}</span></div>
                   <span class="name">2X安徽晋盛东区（直营）马鞍山市南超长超出超长超出超长</span>
                   <span class="num">331.22</span>
                 </li>
               </ul>
-              <ul ref="list2">
+              <ul ref="list4">
                 <li v-for="(item,i) in 11" :key="i" :class="{bg:(i%2==0)?true:false}">
                   <div class="NO" :style="{backgroundColor:i==0?'red':i==1?'#ea6318':i==2?'#e2a21b':'#3ab8b6'}"><span>{{i+1}}</span></div>
                   <span class="name">2X安徽晋盛东区（直营）马鞍山市南超长超出超长超出超长</span>
@@ -227,8 +248,19 @@ export default {
       time: 0, //销售选择时间
       // 贸易公司售空率配置
       mOption: {
-        xAxis: ["js006江苏", "kM泉州", "PL上海", "js006北京", "kM晋江"],
-        num: [90, 130, 180, 35, 90],
+        xAxis: [
+          "js006江苏",
+          "kM泉州",
+          "PL上海",
+          "js006北京",
+          "kM晋江",
+          "js006江苏",
+          "kM泉州",
+          "PL上海",
+          "js006北京",
+          "kM晋江",
+        ],
+        num: [90, 130, 180, 35, 90, 90, 130, 180, 35, 90],
       },
       // 领航售空率图标配置
       lItem: [
@@ -241,8 +273,19 @@ export default {
         { id: "HS879", No: 7, name: "晋江", num: 189 },
       ],
       lOption: {
-        xAxis: ["领航", "kM泉州", "PL上海", "js006北京", "kM晋江"],
-        num: [0, 150, 10, 200, 70],
+        xAxis: [
+          "领航",
+          "kM泉州",
+          "PL上海",
+          "js006北京",
+          "kM晋江",
+          "领航",
+          "kM泉州",
+          "PL上海",
+          "js006北京",
+          "kM晋江",
+        ],
+        num: [0, 150, 10, 200, 70, 0, 150, 10, 200, 70],
       },
       // 贸易公司理单
       ldOption: {
@@ -269,42 +312,60 @@ export default {
   mounted() {
     let _this = this;
     _this.screen();
-    window.onresize = function () {
-      _this.screen();
-    };
+    // window.onresize = function () {
+    //   _this.screen();
+    // };
+    // 在事件被触发时，延迟n秒后再触发回调函数，如果n秒内又触发了事件，则会重新开始计算时间（n秒内最后一次生效）
+    window.addEventListener(
+      "resize",
+      (()=> {
+        let timer; //使用闭包，缓存变量
+        return () => {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => {
+            _this.screen();
+          }, 500);
+        };
+      })()
+    ); //此处()作用 - 立即调用return后面函数，形成闭包
+
     this.$refs.mEchart.initEchart(this.mOption); //贸易公司图表
     this.$refs.lEchart.initEchart(this.lOption); //领航图表
     this.$refs.ldEchart.initEchart(this.ldOption); //贸易公司理单图表
     this.gitNowTime = setInterval(() => {
       _this.nowTime = this.getDateString(new Date()); // 修改数据date
     }, 1000);
-
-    // var list1 = this.$refs.list1;
-    // var list2 = this.$refs.list2;
-    // var scroll_box = this.$refs.scroll_box;
-    // list2.innerHTML = list1.innerHTML;
-    // scroll_box.scrollTop = 0; // 开始无滚动时设为0
-    // let timer = setInterval(this.rollStart, 1500); // 设置定时器，（单位毫秒），参数t越小，滚动速度越快
-    // // 鼠标移入div时暂停滚动
-    // scroll_box.onmouseover = function () {
-    //   clearInterval(timer);
-    // };
-    // // 鼠标移出div后继续滚动
-    // scroll_box.onmouseout = function () {
-    //   timer = setInterval(this.rollStart, 1500);
-    // };
-    // this.$once("hook:beforeDestroy", () => {
-    //   //界面关闭时销毁定时器
-    //   clearInterval(timer);
-    //   timer = null;
-    // });
   },
   beforeDestroy() {
     if (this.gitNowTime) {
-      clearInterval(this.gitNowTime); // 在Vue实例销毁前，清除我们的定时器
+      clearInterval(this.gitNowTime); // 在Vue实例销毁前，清除定时器
     }
   },
   methods: {
+    // 监听select
+    testSelect(e) {
+      console.log(e.target.value);
+    },
+    // 接着动画
+    leaveAn() {
+      this.$refs.list1.style.animationPlayState = "running";
+      this.$refs.list2.style.animationPlayState = "running";
+    },
+    // 暂停动画
+    stopAn() {
+      this.$refs.list1.style.animationPlayState = "paused";
+      this.$refs.list2.style.animationPlayState = "paused";
+    },
+    leaveAn1() {
+      this.$refs.list3.style.animationPlayState = "running";
+      this.$refs.list4.style.animationPlayState = "running";
+    },
+    // 暂停动画
+    stopAn1() {
+      this.$refs.list3.style.animationPlayState = "paused";
+      this.$refs.list4.style.animationPlayState = "paused";
+    },
+    // 获得实时时间
     getDateString(date) {
       var year = date.getFullYear().toString().padStart(4, "0");
       var month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -315,7 +376,6 @@ export default {
       var second = date.getSeconds().toString().padStart(2, "0");
       return `${year}年${month}月${day}日 ${hour}:${minute}:${second}`;
     },
-
     // 界面缩放，界面缩放
     screen() {
       const heightRatio = Number(document.documentElement.clientHeight / 1216);
@@ -327,17 +387,6 @@ export default {
         this.rate = widthRatio;
       } else {
         this.rate = heightRatio;
-      }
-    },
-    // 列表数据滚动
-    rollStart() {
-      // 上面声明的DOM对象为局部对象需要再次声明
-      var list1 = this.$refs.list1;
-      var scroll_box = this.$refs.scroll_box; // 正常滚动不断给scrollTop的值+1,当滚动高度大于列表内容高度时恢复为0
-      if (scroll_box.scrollTop >= list1.scrollHeight) {
-        scroll_box.scrollTop = 0;
-      } else {
-        scroll_box.scrollTop += 30;
       }
     },
     // 时间选择按钮
@@ -659,35 +708,37 @@ export default {
               position: absolute;
               top: 20px;
               right: 0;
-
+              z-index: 3;
               .edit_name {
                 font-size: 14px;
                 color: #fff;
               }
-              select {
-                appearance: none; //去掉下拉图标
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                background: transparent;
-                color: #39b8b6;
-                font-size: 14px;
-                padding: 2px 24px 2px 10px;
-                // background-position: 50%;
-                // background-size: cover;
+              .icon_sel {
+                padding: 2px 24px 2px 16px;
+                display: inline-block;
                 position: relative;
-                option {
+                max-width: 50px;
+
+                select {
+                  height: 100%;
+                  width: 100%;
+                  appearance: none; //去掉下拉图标
+                  -webkit-appearance: none;
+                  -moz-appearance: none;
+                  background: transparent;
+                  color: #39b8b6;
+                  font-size: 14px;
+                  min-width: 30px;
+                  max-width: 70px;
+                  box-sizing: border-box;
+                  margin-right: 8px;
                 }
-              }
-              select:after {
-                content: "";
-                width: 10px;
-                height: 6px;
-                background-image: url("http://tm.lilanz.com/QYWX/Test/LMTest/assets/img/screen/down.png");
-                background-repeat: no-repeat;
-                background-position: center;
-                position: absolute;
-                top: 5px;
-                right: 0;
+                .down_icon {
+                  position: absolute;
+                  top: 8px;
+                  right: 12px;
+                  width: 10px;
+                }
               }
             }
             .echart {
@@ -720,35 +771,38 @@ export default {
             position: absolute;
             top: 20px;
             right: 0;
+            z-index: 3;
 
             .edit_name {
               font-size: 14px;
               color: #fff;
             }
-            select {
-              appearance: none; //去掉下拉图标
-              -webkit-appearance: none;
-              -moz-appearance: none;
-              background: transparent;
-              color: #39b8b6;
-              font-size: 14px;
-              padding: 2px 24px 2px 10px;
-              // background-position: 50%;
-              // background-size: cover;
+            .icon_sel {
+              padding: 2px 24px 2px 16px;
+              display: inline-block;
               position: relative;
-              option {
+              max-width: 50px;
+
+              select {
+                height: 100%;
+                width: 100%;
+                appearance: none; //去掉下拉图标
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                background: transparent;
+                color: #39b8b6;
+                font-size: 14px;
+                min-width: 30px;
+                max-width: 70px;
+                box-sizing: border-box;
+                margin-right: 8px;
               }
-            }
-            select:after {
-              content: "";
-              width: 10px;
-              height: 6px;
-              background-image: url("http://tm.lilanz.com/QYWX/Test/LMTest/assets/img/screen/down.png");
-              background-repeat: no-repeat;
-              background-position: center;
-              position: absolute;
-              top: 5px;
-              right: 0;
+              .down_icon {
+                position: absolute;
+                top: 8px;
+                right: 12px;
+                width: 10px;
+              }
             }
           }
           .echart {
@@ -763,11 +817,19 @@ export default {
         padding-right: 56px;
         .date {
           select {
-            padding: 7px 34px;
+            padding: 7px 45px;
             text-align: center;
             border: 1px solid #39b8b6;
             color: #fff;
             background: transparent;
+            appearance: none; //去掉下拉图标
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            text-align: center;
+            text-align-last: center;
+            option {
+              color: #39b8b6;
+            }
           }
           em {
             color: #39b8b6;
@@ -787,6 +849,11 @@ export default {
         }
         .list_box {
           background-color: #0b1d27;
+          .anim {
+            &:hover {
+              cursor: pointer;
+            }
+          }
           .table_title {
             font-size: 14px;
             color: #757e83;
