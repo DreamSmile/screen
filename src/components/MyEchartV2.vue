@@ -82,17 +82,11 @@ export default {
                     color: "rgba(1, 255, 255,0)", // 100% 处的颜色
                   },
                 ],
-                itemStyle: {
-                  normal: {
-                    lineStyle: {
-                      color: "red",
-                    },
-                  },
-                },
                 global: false, // 缺省为 false
               },
             },
           },
+          
           {
             name: "同期",
             type: "line",
