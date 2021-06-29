@@ -38,19 +38,64 @@
               </div>
             </div>
           </div>
-          <div class="box"></div>
+          <div class="box ranking">
+            <div class="list_title">
+              <span>排名</span>
+              <span>贸易公司</span>
+              <span>售空率</span>
+            </div>
+            <div class="list_rows" v-for="(item ,i) in 6" :key="i">
+              <div class="list_info">
+                <img :src="$imgsrc+'user.png'" />
+                <span class="name">福建润达</span>
+                <span class="num">66.4%</span>
+              </div>
+              <div class="line">
+                <div class="scale" :style="{width:10*i+'%'}"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <!-- 下三个图表 -->
-      <div class="content_echart">
+      <div class="content_bottom">
         <div class="box shop_add">
-          <div class="content_echart"></div>
+          <div class="title">店效及同点增长</div>
+          <div class="content_echart">
+            <add-echart ref="addEchart"></add-echart>
+          </div>
         </div>
         <div class="box shop_new">
-          <div class="content_echart"></div>
+          <div class="title">新开店进展</div>
+          <div class="summary">
+            <div class="num_box">
+              <p>今年总店数</p>
+              <div class="nums">
+                <span v-for="(item,i) in 6" :key="i">{{i}}</span>
+              </div>
+            </div>
+            <div class="num_box">
+              <p>今年总店数</p>
+              <div class="nums">
+                <span v-for="(item,i) in 6" :key="i">{{i}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="info">
+            <div class="rows" v-for="(item,i) in 8" :key="i">
+              <span class="name">领航{{i}}</span>
+              <div class="line">
+                <div class="scale" :style="{width:i*10+'%'}"></div>
+              </div>
+              <span class="ratio">{{i*10+'%'}}</span>
+              <span class="num">125/170</span>
+            </div>
+          </div>
         </div>
         <div class="box shop_money">
-          <div class="content_echart"></div>
+          <div class="content_echart">
+            <my-echert ref="moneyEchart"></my-echert>
+          </div>
         </div>
       </div>
     </div>
@@ -59,11 +104,12 @@
 <style scoped lang="less">
 @import "../assets/css/common.less";
 .LHEchart {
-  background-color: #677296;
+  //   background-color: #677296;
+  background-color: #070e25;
+
   height: 100%;
   width: 100%;
   .container {
-    background-color: #070e25;
     transform-origin: 0 0;
     transition: 0.3s;
     width: 1920px;
@@ -78,7 +124,7 @@
       padding: 0 40px 0 40px;
       margin-top: 20px;
       box-sizing: border-box;
-      border-bottom: 1px solid #fff;
+      //   border-bottom: 1px solid #fff;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -143,6 +189,8 @@
           width: 400px;
           height: 64px;
           display: inline-block;
+          text-align: center;
+          line-height: 64px;
         }
         .date_picker:after {
           content: "";
@@ -183,7 +231,6 @@
           .table_title {
             border: 1px solid #4d87a9;
             span {
-              //   padding-left: 20px;
               box-sizing: border-box;
               font-size: 17px;
               font-weight: 600;
@@ -238,10 +285,74 @@
             }
           }
         }
+        .ranking {
+          .list_title {
+            border: 1px solid #4d87a9;
+            display: flex;
+            justify-content: space-between;
+            span {
+              box-sizing: border-box;
+              font-size: 17px;
+              font-weight: 600;
+              text-align: center;
+              height: 42px;
+              line-height: 42px;
+              -webkit-box-shadow: inset 0 0 30px #113051;
+              -moz-box-shadow: inset 0 0 30px #113051;
+              box-shadow: inset 0 0 30px #113051;
+            }
+            span:nth-child(1) {
+              width: 83px;
+            }
+            span:nth-child(2) {
+              flex: 1;
+              text-align: left;
+            }
+            span:nth-child(3) {
+              width: 104px;
+            }
+          }
+          .list_rows {
+            height: 52px;
+            line-height: 52px;
+            .list_info {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              img {
+                width: 25px;
+                height: 25px;
+                margin: 0 30px;
+              }
+              .name {
+                color: @lh-font-color;
+                font-size: 17px;
+                flex: 1;
+              }
+              .num {
+                width: 104px;
+                text-align: center;
+              }
+            }
+            .line {
+              width: calc(100% - 60px);
+              height: 6px;
+              border-radius: 8px;
+              background-color: #5f6686;
+              margin: 0 30px;
+              .scale {
+                height: 100%;
+                border-radius: 8px;
+                background: linear-gradient(to right, #c34f83, #da729d);
+                background: -moz-linear-gradient(to right, #c34f83, #da729d);
+              }
+            }
+          }
+        }
       }
     }
     // 下三个图表
-    .content_echart {
+    .content_bottom {
       box-sizing: border-box;
       padding: 0 40px;
       display: flex;
@@ -249,13 +360,20 @@
       .box {
         height: 466px;
         border: 1px solid @lh-border-color;
-
+        -webkit-box-shadow: inset 0 0 30px #113051;
+        -moz-box-shadow: inset 0 0 30px #113051;
+        box-shadow: inset 0 0 30px #113051;
+        padding: 12px 32px;
+        box-sizing: border-box;
+        .title {
+          color: #55c6f1;
+          font-weight: 500px;
+          font-size: 24px;
+        }
         .content_echart {
-          //   background-color: #151e37;
-          //   width: calc(100% - 60px);
-          //   height: calc(100% - 28px);
+          width: 100%;
+          height: 100%;
           box-sizing: border-box;
-          //   margin: 14px 30px;
         }
       }
       .shop_add {
@@ -263,6 +381,75 @@
       }
       .shop_new {
         width: 560px;
+        .summary {
+          margin-top: 16px;
+          .num_box {
+            display: inline-block;
+            p {
+              line-height: 48px;
+            }
+            .nums {
+              span {
+                font-size: 30px;
+                font-weight: 600;
+                color: #d8c276;
+                border: 1px solid #4977bc;
+                height: 44px;
+                width: 34px;
+                line-height: 44px;
+                display: inline-block;
+                text-align: center;
+              }
+            }
+          }
+          .num_box:last-child {
+            float: right;
+          }
+          .num_box:last-child::after {
+            clear: both;
+            visibility: hidden;
+            height: 0;
+            display: block;
+          }
+        }
+        .info {
+          margin-top: 15px;
+          .rows {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 36px;
+            line-height: 36px;
+            .name {
+              font-size: 17px;
+              color: #bbcdf0;
+              margin-right: 10px;
+              width: 70px;
+            }
+            .line {
+              height: 10px;
+              border-radius: 8px;
+              width: 292px;
+              background-color: #5f6686;
+
+              .scale {
+                height: 100%;
+                background: linear-gradient(to right, #b775cf, #50d7ff);
+                background: -moz-linear-gradient(to right, #c34f83, #50d7ff);
+                border-radius: 8px;
+              }
+            }
+            .ratio {
+              font-size: 16px;
+              color: #50d4ff;
+              margin: 0 14px 0 8px;
+            }
+            .num {
+              color: #bbcdf0;
+              font-size: 16px;
+            }
+          }
+        }
       }
       .shop_money {
         width: 560px;
@@ -272,9 +459,11 @@
 }
 </style>
 <script>
+import AddEchart from "../components/AddEchart.vue";
 import MyEchartV2 from "../components/MyEchartV2.vue";
+import MyEchert from "../components/MyEchert.vue";
 export default {
-  components: { MyEchartV2 },
+  components: { MyEchartV2, MyEchert, AddEchart },
   data() {
     return {
       rate: 1,
@@ -287,11 +476,29 @@ export default {
         num: [10, 30, 10, 60, 22],
         yAxis: [10, 30, 50, 60, 70],
       },
+      moneyOptions: {
+        xAxis: [
+          "租金",
+          "水电",
+          "工资",
+          "税费",
+          "固定资产支出",
+          "装修费用",
+          "租金",
+          "水电",
+          "工资",
+          "税费",
+        ],
+        num: [150, 10, 200, 70, 150, 10, 200, 70, 0, 150],
+      },
     };
   },
   mounted() {
     this.screen();
     this.$refs.skEchart.initEchart(this.skOption);
+    this.$refs.moneyEchart.initEchart(this.moneyOptions);
+    this.$refs.addEchart.initEchart(this.skOption);
+
     // 在事件被触发时，延迟n秒后再触发回调函数，如果n秒内又触发了事件，则会重新开始计算时间（n秒内最后一次生效）
     window.addEventListener(
       "resize",

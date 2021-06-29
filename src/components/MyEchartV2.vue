@@ -58,7 +58,12 @@ export default {
           },
         },
         legend: {
-          data: ["本期", "同期"],
+          data: [ "同期"],
+          textStyle: {
+            //图例文字的样式
+            color: "#7e91bf",
+            fontSize: 16,
+          },
         },
         series: [
           {
@@ -86,10 +91,10 @@ export default {
               },
             },
           },
-          
+
           {
             name: "同期",
-            type: "line",
+            type: "bar",
             areaStyle: {},
             emphasis: {
               focus: "series",
@@ -97,7 +102,7 @@ export default {
           },
           {
             name: "本期",
-            type: "line",
+            type: "bar",
             emphasis: {
               focus: "series",
             },
