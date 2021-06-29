@@ -340,7 +340,7 @@ export default {
       clearInterval(this.gitNowTime); // 在Vue实例销毁前，清除定时器
     }
   },
-  
+
   methods: {
     // 监听select
     testSelect(e) {

@@ -14,6 +14,5 @@
   font-size: 14px;
   height: 100vh;
   width: 100%;
-  background-color: #091a24;
 }
 </style>
