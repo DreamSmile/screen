@@ -334,6 +334,7 @@
                 text-align: center;
               }
             }
+            
             .line {
               width: calc(100% - 60px);
               height: 6px;
