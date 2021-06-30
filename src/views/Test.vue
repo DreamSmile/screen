@@ -8,8 +8,37 @@
       </select>
       <img :src="$imgsrc+'down.png'" />
     </div>
+    <input type="text" v-model="inpVal" />
+    <p>传输的input值：{{sendInpVal}}</p>
   </div>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      inpVal: "",
+      sendInpVal: "",
+      timer: null,
+    };
+  },
+  watch: {
+    inpVal: function (val) {
+      this.changeInpVal();
+    },
+  },
+  methods: {
+    changeInpVal() {
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setTimeout(() => {
+        this.sendInpVal = this.inpVal;
+        this.timer = null;
+      }, 500);
+    },
+  },
+};
+</script>
 <style scoped lang="less">
 .test {
   .haha {
@@ -23,7 +52,6 @@
       -webkit-appearance: none;
       -moz-appearance: none;
       background-color: transparent;
-      //   background-image: url("http://tm.lilanz.com/QYWX/Test/LMTest/assets/img/screen/down.png");
     }
     img {
       width: 10px;
@@ -31,6 +59,9 @@
       right: 0;
       top: 0;
     }
+  }
+  input {
+    border: 1px solid #000;
   }
 }
 </style>

@@ -7,24 +7,15 @@ import * as echarts from "echarts/core";
 // 引入柱状图图表，图表后缀都为 Chart
 import { LineChart, BarChart } from "echarts/charts";
 // 引入提示框，标题，直角坐标系组件，组件后缀都为 Component
-import {
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  DataZoomComponent,
-  LegendComponent,
-} from "echarts/components";
+import { TooltipComponent, LegendComponent } from "echarts/components";
 // 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
 import { CanvasRenderer } from "echarts/renderers";
 // 注册必须的组件
 echarts.use([
-  TitleComponent,
   TooltipComponent,
-  GridComponent,
   BarChart,
   LineChart,
   CanvasRenderer,
-  DataZoomComponent,
   LegendComponent,
 ]);
 export default {
@@ -43,6 +34,8 @@ export default {
         },
         legend: {
           data: ["本期专卖店", "本期商场", "同店增长"],
+          // "同期专卖店",
+          // "同期商场",
           textStyle: {
             //图例文字的样式
             color: "#7e91bf",
@@ -60,13 +53,13 @@ export default {
               "广东大区",
               "零售客户",
             ],
-            axisLine: {
-              lineStyle: {
-                color: "#8a9fd0", //纵轴颜色
-              },
-            },
             axisPointer: {
               type: "shadow",
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#8a9fd0", //横轴颜色
+              },
             },
           },
         ],
@@ -75,25 +68,40 @@ export default {
             type: "value",
             name: "店效",
             min: 0,
-            max: 250,
-            interval: 50,
-            axisLabel: {
-              formatter: "{value}",
+            max: 50,
+            interval: 10,
+            splitLine: {
+              show: true,
+              lineStyle: {
+                color: ["#232f4e"],
+                width: 1,
+                type: "solid",
+              },
             },
             axisLine: {
               lineStyle: {
-                color: "#8a9fd0", //纵轴颜色
+                color: "#8a9fd0", //横轴颜色
               },
             },
           },
           {
             type: "value",
-            name: "同店增长",
+            name: "增长率",
             min: 0,
-            max: 25,
-            interval: 5,
-            axisLabel: {
-              formatter: "{value}",
+            max: 50,
+            interval: 10,
+            splitLine: {
+              show: true,
+              lineStyle: {
+                color: ["#232f4e"],
+                width: 1,
+                type: "solid",
+              },
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#8a9fd0", //横轴颜色
+              },
             },
           },
         ],
@@ -101,26 +109,65 @@ export default {
           {
             name: "本期专卖店",
             type: "bar",
-            data: [
-              2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4,
-              3.3,
-            ],
+            data: [20.0, 40.9, 17.0, 23.2, 25.6, 20.7],
+            itemStyle: {
+              normal: {
+                color: new echarts.graphic.LinearGradient(
+                  0,
+                  1,
+                  0,
+                  0,
+                  [
+                    {
+                      offset: 0,
+                      color: "#399aff", // 0% 处的颜色
+                    },
+                    {
+                      offset: 1,
+                      color: "#68c8ff", // 100% 处的颜色
+                    },
+                  ],
+                  false
+                ),
+              },
+            },
           },
           {
-            name: "同期专卖店",
+            name: "本期商场",
             type: "bar",
-            data: [
-              2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0,
-              2.3,
-            ],
+            data: [20.6, 5.9, 9.0, 26.4, 28.7, 40.7],
+            itemStyle: {
+              normal: {
+                color: new echarts.graphic.LinearGradient(
+                  0,
+                  1,
+                  0,
+                  0,
+                  [
+                    {
+                      offset: 0,
+                      color: "#37bbaf", // 0% 处的颜色
+                    },
+                    {
+                      offset: 1,
+                      color: "#9aeba6", // 100% 处的颜色
+                    },
+                  ],
+                  false
+                ),
+              },
+            },
           },
           {
             name: "同店增长",
             type: "line",
             yAxisIndex: 1,
-            data: [
-              2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2,
-            ],
+            data: [2.0, 2.2, 3.3, 40.5, 6.3, 10.2, 40.2],
+            itemStyle: {
+              normal: {
+                color: "#ffd859",
+              },
+            },
           },
         ],
       };

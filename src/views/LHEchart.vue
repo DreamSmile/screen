@@ -9,7 +9,7 @@
         </div>
         <div class="h_title">
           <h1>领航营销数据分析</h1>
-          <p>{{nowTime}} 周一</p>
+          <p>{{nowTime}}</p>
         </div>
         <div class="h_time">
           <span class="times time_Sel">近7天</span>
@@ -23,7 +23,15 @@
         <div class="content_box">
           <!-- 上一 -->
           <div class="box">
-            <my-echart-v-2 ref="skEchart"></my-echart-v-2>
+            <div class="edit">
+              <select>
+                <option>领航一部</option>
+                <option>领航二部</option>
+                <option>领航管理中心</option>
+              </select>
+              <img class="down_icon" :src="$imgsrc+'down.png'">
+            </div>
+            <sell-out ref="sellOutEchart"></sell-out>
           </div>
           <div class="box tables">
             <div class="table_title">
@@ -34,7 +42,8 @@
                 <span>领航管理中心</span>
                 <span>256</span>
                 <span>296</span>
-                <span>51.0%</span>
+                <span>51.0%<img class="icon" :src="`${$imgsrc}${i%2==0?'down':'up'}_icon.png`">
+                </span>
               </div>
             </div>
           </div>
@@ -46,12 +55,13 @@
             </div>
             <div class="list_rows" v-for="(item ,i) in 6" :key="i">
               <div class="list_info">
-                <img :src="$imgsrc+'user.png'" />
+                <div class="No_bg"><span>{{i+1}}</span></div>
                 <span class="name">福建润达</span>
                 <span class="num">66.4%</span>
               </div>
               <div class="line">
-                <div class="scale" :style="{width:10*i+'%'}"></div>
+                <div class="scale" :style="{width:10*i+'%'}">
+                </div>
               </div>
             </div>
           </div>
@@ -85,7 +95,9 @@
             <div class="rows" v-for="(item,i) in 8" :key="i">
               <span class="name">领航{{i}}</span>
               <div class="line">
-                <div class="scale" :style="{width:i*10+'%'}"></div>
+                <div class="scale" :style="{width:i*10+'%'}">
+                  <div class="round" v-show="i!=0"></div>
+                </div>
               </div>
               <span class="ratio">{{i*10+'%'}}</span>
               <span class="num">125/170</span>
@@ -93,8 +105,17 @@
           </div>
         </div>
         <div class="box shop_money">
+          <div class="title">六大费用</div>
+          <div class="edit">
+            <select>
+              <option>领航一部</option>
+              <option>领航二部</option>
+              <option>领航管理中心</option>
+            </select>
+            <img class="down_icon" :src="$imgsrc+'down.png'">
+          </div>
           <div class="content_echart">
-            <my-echert ref="moneyEchart"></my-echert>
+            <money-echart ref="moneyEchart"></money-echart>
           </div>
         </div>
       </div>
@@ -106,7 +127,6 @@
 .LHEchart {
   //   background-color: #677296;
   background-color: #070e25;
-
   height: 100%;
   width: 100%;
   .container {
@@ -124,7 +144,6 @@
       padding: 0 40px 0 40px;
       margin-top: 20px;
       box-sizing: border-box;
-      //   border-bottom: 1px solid #fff;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -223,6 +242,41 @@
           width: 575px;
           height: 100%;
           background-color: #151e37;
+          position: relative;
+          .edit {
+            position: absolute;
+            z-index: 3;
+            right: 25px;
+            top: 5px;
+            select {
+              cursor: pointer;
+              border: 1px solid #388db9;
+              box-shadow: inset 0 0 30px #113051;
+              width: 114px;
+              height: 34px;
+              appearance: none; //去掉下拉图标
+              -webkit-appearance: none;
+              -moz-appearance: none;
+              background: transparent;
+              color: #fff;
+              padding: 7px 36px 7px 14px;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              option {
+                background-color: #151e37;
+                color: #fff;
+                cursor: pointer;
+              }
+            }
+            .down_icon {
+              position: absolute;
+              top: 13px;
+              right: 18px;
+              width: 10px;
+              z-index: 4;
+            }
+          }
         }
         .tables {
           padding: 16px 18px;
@@ -281,6 +335,11 @@
               }
               span:nth-child(4) {
                 width: 124px;
+                .icon {
+                  height: 18px;
+                  vertical-align: middle;
+                  margin: 10px;
+                }
               }
             }
           }
@@ -324,6 +383,19 @@
                 height: 25px;
                 margin: 0 30px;
               }
+              .No_bg {
+                width: 18px;
+                height: 18px;
+                background: #5295f6;
+                margin: 0 30px;
+                span {
+                  font-size: 10px;
+                  font-weight: 500;
+                  display: block;
+                  text-align: center;
+                  line-height: 18px;
+                }
+              }
               .name {
                 color: @lh-font-color;
                 font-size: 17px;
@@ -334,7 +406,7 @@
                 text-align: center;
               }
             }
-            
+
             .line {
               width: calc(100% - 60px);
               height: 6px;
@@ -364,11 +436,12 @@
         -webkit-box-shadow: inset 0 0 30px #113051;
         -moz-box-shadow: inset 0 0 30px #113051;
         box-shadow: inset 0 0 30px #113051;
-        padding: 12px 32px;
         box-sizing: border-box;
         .title {
           color: #55c6f1;
-          font-weight: 500px;
+          font-weight: 500;
+          margin-top: 12px;
+          margin-left: 28px;
           font-size: 24px;
         }
         .content_echart {
@@ -384,6 +457,7 @@
         width: 560px;
         .summary {
           margin-top: 16px;
+          padding: 0 32px;
           .num_box {
             display: inline-block;
             p {
@@ -415,6 +489,8 @@
         }
         .info {
           margin-top: 15px;
+          padding: 0 32px;
+
           .rows {
             display: flex;
             justify-content: space-between;
@@ -438,6 +514,16 @@
                 background: linear-gradient(to right, #b775cf, #50d7ff);
                 background: -moz-linear-gradient(to right, #c34f83, #50d7ff);
                 border-radius: 8px;
+                position: relative;
+                .round {
+                  width: 6px;
+                  height: 6px;
+                  border-radius: 50%;
+                  background-color: #fff;
+                  position: absolute;
+                  right: 3px;
+                  top: 2px;
+                }
               }
             }
             .ratio {
@@ -454,6 +540,46 @@
       }
       .shop_money {
         width: 560px;
+        height: 464px;
+        position: relative;
+        .edit {
+          position: absolute;
+          z-index: 3;
+          right: 33px;
+          top: 33px;
+          select {
+            cursor: pointer;
+            border: 1px solid #388db9;
+            box-shadow: inset 0 0 30px #113051;
+            width: 114px;
+            height: 34px;
+            appearance: none; //去掉下拉图标
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: transparent;
+            color: #fff;
+            padding: 7px 36px 7px 14px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            option {
+              background-color: #151e37;
+              color: #fff;
+              cursor: pointer;
+            }
+          }
+          .down_icon {
+            position: absolute;
+            top: 13px;
+            right: 18px;
+            width: 10px;
+            z-index: 4;
+          }
+        }
+        .money_echart {
+          width: 100%;
+          height: 428px;
+        }
       }
     }
   }
@@ -461,10 +587,12 @@
 </style>
 <script>
 import AddEchart from "../components/AddEchart.vue";
+import MoneyEchart from "../components/MoneyEchart.vue";
 import MyEchartV2 from "../components/MyEchartV2.vue";
 import MyEchert from "../components/MyEchert.vue";
+import SellOut from "../components/SellOut.vue";
 export default {
-  components: { MyEchartV2, MyEchert, AddEchart },
+  components: { MyEchartV2, MyEchert, AddEchart, MoneyEchart, SellOut },
   data() {
     return {
       rate: 1,
@@ -496,9 +624,9 @@ export default {
   },
   mounted() {
     this.screen();
-    this.$refs.skEchart.initEchart(this.skOption);
-    this.$refs.moneyEchart.initEchart(this.moneyOptions);
-    this.$refs.addEchart.initEchart(this.skOption);
+    this.$refs.sellOutEchart.initEchart(this.skOption); //售空折线渐变图
+    this.$refs.moneyEchart.initEchart(this.moneyOptions); //六大费用
+    this.$refs.addEchart.initEchart(this.skOption); //店效及增长
 
     // 在事件被触发时，延迟n秒后再触发回调函数，如果n秒内又触发了事件，则会重新开始计算时间（n秒内最后一次生效）
     window.addEventListener(
@@ -526,14 +654,18 @@ export default {
   methods: {
     // 获得实时时间
     getDateString(date) {
-      var year = date.getFullYear().toString().padStart(4, "0");
-      var month = (date.getMonth() + 1).toString().padStart(2, "0");
-      var day = date.getDate().toString().padStart(2, "0");
+      let year = date.getFullYear().toString().padStart(4, "0");
+      let month = (date.getMonth() + 1).toString().padStart(2, "0");
+      let day = date.getDate().toString().padStart(2, "0");
 
-      var hour = date.getHours().toString().padStart(2, "0");
-      var minute = date.getMinutes().toString().padStart(2, "0");
-      var second = date.getSeconds().toString().padStart(2, "0");
-      return `${year}年${month}月${day}日 ${hour}:${minute}:${second}`;
+      let hour = date.getHours().toString().padStart(2, "0");
+      let minute = date.getMinutes().toString().padStart(2, "0");
+      let second = date.getSeconds().toString().padStart(2, "0");
+      let weeks = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+
+      return `${year}年${month}月${day}日 ${hour}:${minute}:${second} ${
+        weeks[date.getDay()]
+      }`;
     },
     // 界面缩放，界面缩放
     screen() {
