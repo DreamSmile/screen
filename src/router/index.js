@@ -6,6 +6,8 @@ import LHEchart from '../views/LHEchart.vue'
 
 Vue.use(VueRouter)
 const error = r => require.ensure([], () => r(require('@/views/404')), 'error');
+const checkWork = r => require.ensure([], () => r(require('@/views/CheckWork')), 'checkWork');
+
 const routes = [
   {
     path: '/',
@@ -19,6 +21,10 @@ const routes = [
     path: '/lhEchart',
     name: 'LHEchart',
     component: LHEchart
+  }, {
+    path: '/checkWork',
+    name: 'CheckWork',
+    component: checkWork
   }, {
     path: '/error',
     name: 'Error',

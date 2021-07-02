@@ -10,4 +10,15 @@ module.exports = {
             }
         })
     },
+    devServer: {
+        disableHostCheck: true,
+        host: '0.0.0.0',
+        port: 8080,
+        proxy: {
+            '/checkWork': {
+                target: 'http://tm.lilanz.com/oa/api/checkOutCore.ashx',
+                changeOrigin: true
+            },
+        }
+    }
 }
