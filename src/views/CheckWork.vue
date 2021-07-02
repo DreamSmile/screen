@@ -10,8 +10,8 @@
             <h2>LILANZ EMPLOYEE ATTENDANCE MONITORING</h2>
           </div>
           <div class="h_time">
-            <p class="date">2021/07/01 星期四</p>
-            <p class="time">下午 14:32:21</p>
+            <p class="date">{{nowDate}} {{NowDay}}</p>
+            <p class="time">{{parseInt(nowTime.substring(0,2))>12?'下午':'上午'}} {{nowTime}}</p>
           </div>
         </div>
       </header>
@@ -23,20 +23,19 @@
           <div class="con_el" :style="{backgroundImage:'url('+$imgsrc+'bg.png)'}" v-for="item in showData" :key="item.ryid">
             <div class="face">
               <img :src="$imgsrc+'avatar_border.png'" />
-              <div class="user_face" :style="{backgroundImage:'url('+$imgsrcFace+')'}"></div>
-              <!-- <div class="user_face" :style="{backgroundImage:'url('+!item.photo?item.photo:$imgsrcFace}"></div> -->
+              <div class="user_face" v-lazy:background-image="item.photo"></div>
             </div>
             <div class="user_info">
               <p class="user_name">{{item.cname}}</p>
               <p class="user_work">{{item.deptName}}</p>
             </div>
             <div class="user_time">
-              <em>迟到</em>{{item.lostDays!=0?item.lostDays:item.delayTimes}}
+              <em>{{item.lostDays!=0?'旷工':'迟到'}}</em>{{item.lostDays!=0?item.lostDays:item.delayTimes}}
               {{item.lostDays!=0?'天':'分'}}
             </div>
           </div>
           <div class="page">
-            {{showPage}}/{{allPage}}
+            {{showPage}} / {{allPage}}
           </div>
         </div>
         <div class="right_bg">
@@ -47,24 +46,190 @@
         <div class="footer_bg" :style="{backgroundImage:'url('+$imgsrc+'bottom_bg.png)'}">
           <div class="box">
             <p class="name">异常考勤</p>
-            <p class="num"><em>60</em>人</p>
+            <p class="num"><em>{{dataList.length}}</em>人</p>
           </div>
           <div class="box">
             <p class="name">迟到人数</p>
-            <p class="num"><em>60</em>人</p>
+            <p class="num"><em>{{parseInt(dataList.length)-lostUser}}</em>人</p>
           </div>
           <div class="box">
             <p class="name">旷工人数</p>
-            <p class="num"><em>60</em>人</p>
+            <p class="num"><em>{{lostUser}}</em>人</p>
           </div>
         </div>
       </footer>
     </div>
   </div>
 </template>
+
+<script>
+// 1：获取到接口数据，使用promise延迟修改showData数据和页码等信息
+// 获取到的接口数据存储在dataList，页面的数据使用下标的方式截取dataList展示
+// 通过定时器+pr
+import { Toast, Lazyload } from "vant";
+export default {
+  data() {
+    return {
+      scale: 1,
+      dataList: [], //接口返回的所有数据
+      showData: [], //界面显示的数据，分页模式
+      lostUser: 0, //旷工人数
+      showPage: 0, //当前显示的分页数
+      allPage: 0,
+      nowDate: "----:--:--",
+      NowDay: "星期X",
+      nowTime: "00:00:00",
+      startArrIndex: 0,
+      endArrIndex: 0,
+    };
+  },
+  mounted() {
+    Toast.loading({
+      message: "加载中...",
+      forbidClick: true,
+      duration: 0,
+    });
+    let _this = this;
+    this.setScale();
+    this.getData();
+    this.getNowdate = setInterval(() => {
+      _this.nowDate = this.getDateString(new Date()); // 获得日期
+      _this.NowDay = this.getSunDay(new Date()); //星期
+    }, 1000);
+    this.getNowTime = setInterval(() => {
+      _this.nowTime = this.getTimeString(new Date()); //获得时分秒
+    }, 1000);
+    window.addEventListener(
+      "resize",
+      (() => {
+        let timer; //使用闭包，缓存变量
+        return () => {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => {
+            _this.setScale();
+          }, 500);
+        };
+      })()
+    ); //此处()作用 - 立即调用return后面函数，形成闭包
+  },
+  beforeDestroy() {
+    if (this.getNowdate) {
+      clearInterval(this.getNowdate); // 在Vue实例销毁前，清除定时器
+    }
+    if (this.getNowTime) {
+      clearInterval(this.getNowTime);
+    }
+  },
+  methods: {
+    getData() {
+      this.$api
+        .getCheckWork({
+          action: "loadCheckData",
+          loadDate: this.getDateString(new Date()),
+        })
+        .then((res) => {
+          if (res.errcode != 0) {
+            alert("获取信息错误，原因为：" + res.errmsg);
+            return;
+          }
+          if (res.data.length < 1) {
+            alert("今日无迟到人员！");
+            return;
+          }
+          this.clearData(); //先清除
+          this.dataList = res.data;
+          this.allPage = Math.ceil(parseInt(this.dataList.length) / 16); //总页数
+          this.showData = this.dataList.slice(0, 16); //获取到数据的时候就先显示第一页到界面上
+          Toast.clear();
+          this.setData();
+          let arrLater = this.dataList.filter((val) => {
+            return Number(val.lostDays) > 0;
+          });
+          this.lostUser = arrLater.length;
+        })
+        .catch((err) => {
+          alert("连接失败，原因为：" + err);
+        });
+    },
+    async setData() {
+      // 每隔三秒更新showData，检测到是最后一页的时候，重新请求一次接口
+      if (this.showPage < this.allPage) {
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            this.showData = [];
+            this.startArrIndex = parseInt(this.showPage) * 16; //当前页面显示的第一个数据在总数据中的index
+            this.endArrIndex = this.startArrIndex + 16; //当前页面显示的最后一个数据在总数据中的index
+            this.showPage = this.showPage == this.allPage ? 1 : ++this.showPage;
+            this.showData = this.dataList.slice(
+              this.startArrIndex,
+              this.endArrIndex
+            );
+            resolve();
+          }, 10000);
+        });
+        this.setData();
+      } else {
+        setTimeout(() => {
+          this.getData();
+        }, 5000);
+      }
+    },
+    // 获得日期
+    getDateString(date) {
+      let year = date.getFullYear().toString().padStart(4, "0");
+      let month = (date.getMonth() + 1).toString().padStart(2, "0");
+      let day = date.getDate().toString().padStart(2, "0");
+      return `${year}/${month}/${day}`;
+    },
+    getSunDay(date) {
+      let weeks = [
+        "星期日",
+        "星期一",
+        "星期二",
+        "星期三",
+        "星期四",
+        "星期五",
+        "星期六",
+      ];
+      return `${weeks[date.getDay()]}`;
+    },
+    // 获得时分秒
+    getTimeString(date) {
+      let hour = date.getHours().toString().padStart(2, "0");
+      let minute = date.getMinutes().toString().padStart(2, "0");
+      let second = date.getSeconds().toString().padStart(2, "0");
+      return `${hour}:${minute}:${second}`;
+    },
+    // 重新获取数据并赋值之前，先清空
+    clearData() {
+      this.dataList = [];
+      this.showData = [];
+      this.showPage = 1; //当前显示的分页数
+      this.allPage = 1;
+      this.startArrIndex = 0;
+      this.endArrIndex = 0;
+    },
+
+    // 缩放
+    setScale() {
+      const heightRatio = Number(document.documentElement.clientHeight / 840);
+      const widthRatio = Number(document.documentElement.clientWidth / 1440);
+      var ratio =
+        document.documentElement.clientWidth /
+        document.documentElement.clientHeight;
+      if (ratio < 1440 / 840) {
+        this.scale = widthRatio;
+      } else {
+        this.scale = heightRatio;
+      }
+    },
+  },
+};
+</script>
 <style scoped lang="less">
 .check_work_bg {
-  background-color: #e2e2e2;
+  // background-color: #e2e2e2;
+  background-color: #000;
   height: 100%;
   width: 100%;
   .check_work {
@@ -141,7 +306,8 @@
         }
       }
       .content {
-        height: 440px;
+        // height: 440px;
+        height: 457px;
         width: 1300px;
         margin: auto;
         position: absolute;
@@ -149,7 +315,7 @@
         left: 0;
         right: 0;
         display: flex;
-        justify-content: space-between;
+        // justify-content: space-between;//去除这个样式，防止不足4个时样式会错乱、
         flex-wrap: wrap;
 
         .con_el {
@@ -177,16 +343,18 @@
               height: 62px;
               background-position: center;
               background-size: cover;
+              transition: all 2s;
+              -webkit-transition: all 2s; /* Safari */
               border-radius: 50%;
             }
           }
           .user_info {
             width: 68px;
+            height: 42px;
             .user_name {
               font-size: 18px;
               font-weight: 600;
               color: #fff;
-              margin-top: 24px;
               width: 4em;
               overflow: hidden;
               text-overflow: ellipsis;
@@ -226,7 +394,11 @@
           font-size: 18px;
           font-weight: 500;
           color: #fff;
-          margin: 33px auto;
+          margin: 0 auto;
+          position: absolute;
+          bottom: -60px;
+          left: 0;
+          right: 0;
         }
       }
       .right_bg {
@@ -283,457 +455,3 @@
   }
 }
 </style>
-<script>
-export default {
-  data() {
-    return {
-      scale: 1,
-      dataList: [
-        {
-          userid: 1944,
-          cname: "吴辉雄",
-          rybh: "4353",
-          deptid: 1387,
-          deptName: "休闲时尚/IP联名T恤",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 1.0,
-          ryid: 8882,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_8882.jpg",
-          status: "lostDay",
-          counts: 1.0,
-          TITLE: "经理",
-        },
-        {
-          userid: 1969,
-          cname: "曾培专",
-          rybh: "4368",
-          deptid: 1091,
-          deptName: "凤眼/压衬",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 1.0,
-          ryid: 8844,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_8844.jpg",
-          status: "lostDay",
-          counts: 1.0,
-          TITLE: "专员",
-        },
-        {
-          userid: 3977,
-          cname: "章宇峰",
-          rybh: "3890",
-          deptid: 105,
-          deptName: "总裁办",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 1.0,
-          ryid: 6593,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_6593.jpg",
-          status: "lostDay",
-          counts: 1.0,
-          TITLE: "总监",
-        },
-        {
-          userid: 3981,
-          cname: "连玲芳",
-          rybh: "3917",
-          deptid: 776,
-          deptName: "平面企划组",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 0.5,
-          ryid: 6604,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_6604.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 9043,
-          cname: "蔡梅香",
-          rybh: "6630",
-          deptid: 956,
-          deptName: "高端项目",
-          delayTimes: 1,
-          delayMinutes: 3,
-          lostDays: 0.0,
-          ryid: 39344,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_39344.jpg",
-          status: "delay",
-          counts: 3.0,
-          TITLE: "主管",
-        },
-        {
-          userid: 9057,
-          cname: "李军",
-          rybh: "6647",
-          deptid: 878,
-          deptName: "工程督导组",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 1.0,
-          ryid: 39425,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_39425.jpg",
-          status: "lostDay",
-          counts: 1.0,
-          TITLE: "主管",
-        },
-        {
-          userid: 9424,
-          cname: "黄志鹏",
-          rybh: "7045",
-          deptid: 898,
-          deptName: "牛仔项目",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 0.5,
-          ryid: 41208,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_41208.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 9670,
-          cname: "林燕妮",
-          rybh: "7291",
-          deptid: 756,
-          deptName: "招聘培训",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 0.5,
-          ryid: 42439,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_42439.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "主管",
-        },
-        {
-          userid: 10169,
-          cname: "刘丽霞",
-          rybh: "7787",
-          deptid: 1160,
-          deptName: "产品企划",
-          delayTimes: 1,
-          delayMinutes: 7,
-          lostDays: 0.5,
-          ryid: 44094,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_44094.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 10286,
-          cname: "许凤琳",
-          rybh: "7896",
-          deptid: 791,
-          deptName: "业务采购五部",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 0.5,
-          ryid: 44448,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_44448.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 10354,
-          cname: "王智勇",
-          rybh: "7969",
-          deptid: 1238,
-          deptName: "线上零售中心",
-          delayTimes: 1,
-          delayMinutes: 10,
-          lostDays: 0.0,
-          ryid: 44924,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_44924.jpg",
-          status: "delay",
-          counts: 10.0,
-          TITLE: "副总监",
-        },
-        {
-          userid: 10517,
-          cname: "杨小翔",
-          rybh: "8136",
-          deptid: 1318,
-          deptName: "T恤/毛衫/羊绒",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 0.5,
-          ryid: 45298,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_45298.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 10537,
-          cname: "努尔比燕·吐尔洪",
-          rybh: "8158",
-          deptid: 1206,
-          deptName: "轻商务项目",
-          delayTimes: 1,
-          delayMinutes: 7,
-          lostDays: 0.5,
-          ryid: 45344,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_45344.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 10567,
-          cname: "卢东明",
-          rybh: "8187",
-          deptid: 1015,
-          deptName: "轻薄羽绒/商务休闲T恤",
-          delayTimes: 1,
-          delayMinutes: 5,
-          lostDays: 0.0,
-          ryid: 45408,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_45408.jpg",
-          status: "delay",
-          counts: 5.0,
-          TITLE: "专员",
-        },
-        {
-          userid: 10574,
-          cname: "简世豪",
-          rybh: "8194",
-          deptid: 1161,
-          deptName: "视觉企划",
-          delayTimes: 1,
-          delayMinutes: 5,
-          lostDays: 0.0,
-          ryid: 45415,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_45415.jpg",
-          status: "delay",
-          counts: 5.0,
-          TITLE: "专员",
-        },
-        {
-          userid: 10909,
-          cname: "杨雅君",
-          rybh: "8548",
-          deptid: 1316,
-          deptName: "外套",
-          delayTimes: 1,
-          delayMinutes: 1,
-          lostDays: 0.0,
-          ryid: 46806,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_46806.jpg",
-          status: "delay",
-          counts: 1.0,
-          TITLE: "专员",
-        },
-        {
-          userid: 10999,
-          cname: "李盛华",
-          rybh: "5071",
-          deptid: 989,
-          deptName: "总账核算课",
-          delayTimes: 1,
-          delayMinutes: 1,
-          lostDays: 0.0,
-          ryid: 16654,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_16654.jpg",
-          status: "delay",
-          counts: 1.0,
-          TITLE: "主管",
-        },
-        {
-          userid: 11271,
-          cname: "雷燕芳",
-          rybh: "8872",
-          deptid: 997,
-          deptName: "造价合约组",
-          delayTimes: 1,
-          delayMinutes: 1,
-          lostDays: 0.0,
-          ryid: 48041,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_48041.jpg",
-          status: "delay",
-          counts: 1.0,
-          TITLE: "主管",
-        },
-        {
-          userid: 11391,
-          cname: "王凤",
-          rybh: "8965",
-          deptid: 1337,
-          deptName: "休闲裤",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 0.5,
-          ryid: 48413,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_48413.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 11415,
-          cname: "郑臻",
-          rybh: "8957",
-          deptid: 336,
-          deptName: "领航营销公司",
-          delayTimes: 2,
-          delayMinutes: 3,
-          lostDays: 0.0,
-          ryid: 48400,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_48400.jpg",
-          status: "delay",
-          counts: 3.0,
-          TITLE: "专员",
-        },
-        {
-          userid: 11486,
-          cname: "杜雨芸",
-          rybh: "9073",
-          deptid: 1035,
-          deptName: "成衣质量跟进部",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 0.5,
-          ryid: 48810,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_48810.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 11508,
-          cname: "丁佳梅",
-          rybh: "9128",
-          deptid: 1324,
-          deptName: "单西/羊绒",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 0.5,
-          ryid: 48938,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_48938.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 11516,
-          cname: "陈姗",
-          rybh: "9056",
-          deptid: 789,
-          deptName: "业务采购二部",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 0.5,
-          ryid: 48787,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_48787.jpg",
-          status: "lostDay",
-          counts: 0.5,
-          TITLE: "专员",
-        },
-        {
-          userid: 11576,
-          cname: "林景钦",
-          rybh: "9200",
-          deptid: 1072,
-          deptName: "牛仔裤",
-          delayTimes: 0,
-          delayMinutes: 0,
-          lostDays: 1.0,
-          ryid: 49121,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_49121.jpg",
-          status: "lostDay",
-          counts: 1.0,
-          TITLE: "基层员工",
-        },
-        {
-          userid: 11600,
-          cname: "卢佳欣",
-          rybh: "9171",
-          deptid: 1238,
-          deptName: "线上零售中心",
-          delayTimes: 1,
-          delayMinutes: 1,
-          lostDays: 0.0,
-          ryid: 49050,
-          photo: "http://webt.lilang.com:9001/photo/tzphoto/photo_49050.jpg",
-          status: "delay",
-          counts: 1.0,
-          TITLE: "专员",
-        },
-      ], //接口返回的所有数据
-      showData: [], //界面显示的数据，分页模式
-      showPage: 1, //当前显示的分页数
-      allPage: 1,
-    };
-  },
-  mounted() {
-    let _this = this;
-    this.setScale();
-    this.getData();
-    window.addEventListener(
-      "resize",
-      (() => {
-        let timer; //使用闭包，缓存变量
-        return () => {
-          if (timer) clearTimeout(timer);
-          timer = setTimeout(() => {
-            _this.setScale();
-          }, 500);
-        };
-      })()
-    ); //此处()作用 - 立即调用return后面函数，形成闭包
-  },
-  methods: {
-    getData() {
-      // 当数量超过一页显示
-      //   for(let i=0;i< this.dataList.length;i++){
-
-      //   }
-      if (this.dataList.length > 16) {
-        this.allPage = Math.ceil(parseInt(this.dataList.length) / 16); //总页数
-        for (let i = 0; i < 16; i++) {
-          //   if (i > 15) {
-          this.showData.push(this.dataList[i]);
-          //   }
-        }
-      } else {
-        this.showData = this.dataList;
-      }
-
-      return;
-      this.$api
-        .getCheckWork({
-          action: "loadCheckData",
-          loadDate: "2021/07/01",
-        })
-        .then((res) => {
-          if (res.errcode != 0) {
-            alert("获取信息错误，原因为：" + res.errmsg);
-            return;
-          }
-          console.log(res.data);
-          this.dataList = res.data;
-        })
-        .catch((err) => {
-          alert("连接失败，原因为：" + err);
-        });
-    },
-    setScale() {
-      const heightRatio = Number(document.documentElement.clientHeight / 840);
-      const widthRatio = Number(document.documentElement.clientWidth / 1440);
-      var ratio =
-        document.documentElement.clientWidth /
-        document.documentElement.clientHeight;
-      if (ratio < 1440 / 840) {
-        this.scale = widthRatio;
-      } else {
-        this.scale = heightRatio;
-      }
-    },
-  },
-};
-</script>

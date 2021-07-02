@@ -17,8 +17,11 @@ module.exports = {
         proxy: {
             '/checkWork': {
                 target: 'http://tm.lilanz.com/oa/api/checkOutCore.ashx',
-                changeOrigin: true
-            },
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/checkWork': ''
+                }
+            }
         }
     }
 }

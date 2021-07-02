@@ -57,18 +57,6 @@ axiosIns.interceptors.response.use(response => {
         error.message = `请求失败 原因：` + error.message;
     return Promise.reject(error.message);
 });
-export function $post(url, params, config = {}) {
-    return new Promise((resolve, reject) => {
-        axiosIns.post(url, params, config).then(res => {
-            if (res.status == 200)
-                resolve(res.data);
-            else
-                reject(`POST请求失败 信息：status=${res.status} statusText=${res.statusText}`);
-        }).catch(errmsg => {
-            reject(errmsg);
-        });
-    });
-}
 export function $get(url, params, config = {}) {
     if (params && typeof (config) == "object") {
         config.params = params;
